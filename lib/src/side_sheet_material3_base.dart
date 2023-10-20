@@ -69,7 +69,8 @@ Future<void> showModalSideSheet(
   required double width,
   required double height,
   required Widget body,
-  required bool rightSide,
+  required bool showOnRight,
+  required Alignment alignment,
   required BorderRadius borderRadius,
   required Color color,
   required Color surfaceTintColor,
@@ -94,19 +95,18 @@ Future<void> showModalSideSheet(
     barrierLabel: 'Material 3 side sheet',
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       return SlideTransition(
-        position: Tween(begin: Offset((rightSide ? 1 : -1), 0), end: Offset(0, 0))
+        position: Tween(begin: Offset((showOnRight ? 1 : -1), 0), end: Offset(0, 0))
             .animate(animation),
         child: child,
       );
     },
     pageBuilder: (context, animation1, animation2) {
       return Align(
-        alignment: (rightSide ? Alignment.centerRight : Alignment.centerLeft),
+        alignment: alignment,
         child: SideSheetMaterial3(
           width: width,
           height: height,
           body: body,
-          rightSide: rightSide,
           borderRadius: borderRadius,
           color: color,
           surfaceTintColor: surfaceTintColor,
@@ -136,7 +136,6 @@ class SideSheetMaterial3 extends StatelessWidget {
   final double width;
   final double height;
   final Widget body;
-  final bool rightSide;
   final BorderRadius borderRadius;
   final Color color;
   final Color surfaceTintColor;
@@ -155,7 +154,6 @@ class SideSheetMaterial3 extends StatelessWidget {
     required this.width,
     required this.height,
     required this.body,
-    required this.rightSide,
     required this.borderRadius,
     required this.color,
     required this.surfaceTintColor,
