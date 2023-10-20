@@ -66,19 +66,20 @@ import 'package:flutter/material.dart';
 /// ```
 Future<void> showModalSideSheet(
   BuildContext context, {
+  required double width,
+  required double height,
   required Widget body,
-  required String header,
+  required bool rightSide,
+  required BorderRadius borderRadius,
+  required Color color,
+  required Color surfaceTintColor,
   bool barrierDismissible = false,
-  bool addBackIconButton = false,
-  bool addCloseIconButton = true,
   bool addActions = true,
   bool addDivider = true,
   bool safeAreaTop = true,
   bool safeAreaBottom = false,
   String confirmActionTitle = 'Save',
   String cancelActionTitle = 'Cancel',
-  String? closeButtonTooltip = 'Close',
-  String? backButtonTooltip = 'Back',
   void Function()? confirmActionOnPressed,
   void Function()? cancelActionOnPressed,
   void Function()? onDismiss,
@@ -93,19 +94,22 @@ Future<void> showModalSideSheet(
     barrierLabel: 'Material 3 side sheet',
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       return SlideTransition(
-        position: Tween(begin: Offset(1, 0), end: Offset(0, 0)).animate(
-          animation,
-        ),
+        position: Tween(begin: Offset((rightSide ? 1 : -1), 0), end: Offset(0, 0))
+            .animate(animation),
         child: child,
       );
     },
     pageBuilder: (context, animation1, animation2) {
       return Align(
-        alignment: Alignment.centerRight,
+        alignment: (rightSide ? Alignment.centerRight : Alignment.centerLeft),
         child: SideSheetMaterial3(
-          header: header,
+          width: width,
+          height: height,
           body: body,
-          addBackIconButton: addBackIconButton,
+          rightSide: rightSide,
+          borderRadius: borderRadius,
+          color: color,
+          surfaceTintColor: surfaceTintColor,
           addActions: addActions,
           addDivider: addDivider,
           safeAreaTop: safeAreaTop,
@@ -114,9 +118,6 @@ Future<void> showModalSideSheet(
           cancelActionOnPressed: cancelActionOnPressed,
           confirmActionTitle: confirmActionTitle,
           cancelActionTitle: cancelActionTitle,
-          closeButtonTooltip: closeButtonTooltip,
-          backButtonTooltip: backButtonTooltip,
-          addCloseIconButton: addCloseIconButton,
           onClose: onClose,
         ),
       );
@@ -132,27 +133,32 @@ Future<void> showModalSideSheet(
 }
 
 class SideSheetMaterial3 extends StatelessWidget {
-  final String header;
+  final double width;
+  final double height;
   final Widget body;
-  final bool addBackIconButton;
-  final bool addCloseIconButton;
+  final bool rightSide;
+  final BorderRadius borderRadius;
+  final Color color;
+  final Color surfaceTintColor;
   final bool addActions;
   final bool addDivider;
   final bool safeAreaTop;
   final bool safeAreaBottom;
   final String confirmActionTitle;
   final String cancelActionTitle;
-  final String? closeButtonTooltip;
-  final String? backButtonTooltip;
 
   final void Function()? confirmActionOnPressed;
   final void Function()? cancelActionOnPressed;
   final void Function()? onClose;
   const SideSheetMaterial3({
     super.key,
-    required this.header,
+    required this.width,
+    required this.height,
     required this.body,
-    required this.addBackIconButton,
+    required this.rightSide,
+    required this.borderRadius,
+    required this.color,
+    required this.surfaceTintColor,
     required this.addActions,
     required this.addDivider,
     required this.safeAreaBottom,
@@ -161,38 +167,31 @@ class SideSheetMaterial3 extends StatelessWidget {
     required this.confirmActionOnPressed,
     required this.cancelActionTitle,
     required this.confirmActionTitle,
-    required this.closeButtonTooltip,
-    required this.backButtonTooltip,
-    required this.addCloseIconButton,
     required this.onClose,
   });
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
 
     return Material(
       elevation: 1,
-      color: colorScheme.surface,
-      surfaceTintColor: colorScheme.surfaceTint,
-      borderRadius: const BorderRadius.horizontal(left: Radius.circular(28)),
+      color: color,
+      surfaceTintColor: surfaceTintColor,
+      borderRadius: borderRadius,
       child: SafeArea(
         top: safeAreaTop,
         bottom: safeAreaBottom,
-        minimum: EdgeInsets.only(top: addBackIconButton ? 16 : 24),
+        minimum: EdgeInsets.only(top: 24),
         child: Container(
           constraints: BoxConstraints(
-            minWidth: 256,
-            maxWidth: size.width <= 600 ? size.width : 400,
-            minHeight: size.height,
-            maxHeight: size.height,
+            minWidth: width,
+            maxWidth: width <= size.width ? width : size.width,
+            minHeight: height,
+            maxHeight: height <= size.height ? height : size.height,
           ),
           child: Column(
             children: [
-              _buildHeader(textTheme, context),
               Expanded(
                 child: body,
               ),
@@ -203,60 +202,6 @@ class SideSheetMaterial3 extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(
-    TextTheme textTheme,
-    BuildContext context,
-  ) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(addBackIconButton ? 16 : 24, 0, 16, 16),
-      child: Row(
-        children: [
-          Visibility(
-            visible: addBackIconButton,
-            child: Container(
-              margin: const EdgeInsets.only(right: 12),
-              child: IconButton(
-                onPressed: () {
-                  if (onClose == null) {
-                    Navigator.pop(context);
-                  } else {
-                    onClose!();
-                  }
-                },
-                tooltip: backButtonTooltip,
-                icon: const Icon(Icons.arrow_back),
-              ),
-            ),
-          ),
-          Text(
-            header,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.titleSmall,
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            child: SizedBox(width: addCloseIconButton ? 12 : 8),
-          ),
-          Visibility(
-            visible: addCloseIconButton,
-            child: IconButton(
-              onPressed: () {
-                if (onClose == null) {
-                  Navigator.pop(context);
-                } else {
-                  onClose!();
-                }
-              },
-              tooltip: closeButtonTooltip,
-              icon: const Icon(Icons.close),
-            ),
-          ),
-        ],
       ),
     );
   }
