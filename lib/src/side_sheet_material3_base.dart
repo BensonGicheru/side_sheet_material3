@@ -64,7 +64,7 @@ import 'package:flutter/material.dart';
 ///   },
 /// );
 /// ```
-Future<void> showModalSideSheet(
+Future<T?> showModalSideSheet<T>(
   BuildContext context, {
   required double width,
   required double height,
@@ -87,7 +87,7 @@ Future<void> showModalSideSheet(
   void Function()? onClose,
   Duration? transitionDuration,
 }) async {
-  await showGeneralDialog(
+  return await showGeneralDialog(
     context: context,
     transitionDuration: transitionDuration ?? Duration(milliseconds: 500),
     barrierDismissible: barrierDismissible,
@@ -122,14 +122,15 @@ Future<void> showModalSideSheet(
         ),
       );
     },
-  ).then(
-    (value) {
-      if (!barrierDismissible) return;
-      if (onDismiss != null) {
-        onDismiss();
-      }
-    },
   );
+  //     .then(
+  //   (value) {
+  //     if (!barrierDismissible) return;
+  //     if (onDismiss != null) {
+  //       onDismiss();
+  //     }
+  //   },
+  // );
 }
 
 class SideSheetMaterial3 extends StatelessWidget {
