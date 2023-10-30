@@ -75,6 +75,7 @@ Future<T?> showModalSideSheet<T>(
   required Color color,
   required Color surfaceTintColor,
   bool barrierDismissible = false,
+  bool useRootNavigator = false,
   bool addActions = true,
   bool addDivider = true,
   bool safeAreaTop = true,
@@ -93,6 +94,7 @@ Future<T?> showModalSideSheet<T>(
     barrierDismissible: barrierDismissible,
     barrierColor: Theme.of(context).colorScheme.scrim.withOpacity(0.3),
     barrierLabel: 'Material 3 side sheet',
+    useRootNavigator: useRootNavigator,
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       return SlideTransition(
         position: Tween(begin: Offset((showOnRight ? 1 : -1), 0), end: Offset(0, 0))
